@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 _ = load_dotenv()
 
 intents = discord.Intents.default()
-intents.message_content = True
 
 client = discord.Client(intents=intents)
 
