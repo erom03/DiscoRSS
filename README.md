@@ -18,7 +18,8 @@ A self-hosted Discord bot that transforms RSS feeds into Discord forum discussio
 
 - Python 3.13 or higher
 - Discord bot token with forum channel and message content permissions
-- RSS feeds to monitor
+    - View [Bot Permissions](##BotPermissions)
+- Community discord server
 
 ### Installation
 
@@ -44,6 +45,10 @@ A self-hosted Discord bot that transforms RSS feeds into Discord forum discussio
    python -m bot.main
    ```
 
+5. **Sync the commands**
+   Once the bot is running, do `!sync` to populate the slash commands.
+   Note this may take a few minutes.
+
 ## Configuration
 
 Create a `.env` file with the following variables:
@@ -57,6 +62,15 @@ POLL_INTERVAL_MINUTES=15
 - `token` - Your Discord bot token from the Discord Developer Portal
 - `userid` - Your Discord user ID (for bot owner commands)
 - `POLL_INTERVAL_MINUTES` - How often to check feeds for new content (default: 15 minutes)
+
+## Bot Permissions
+
+Your Discord bot needs the following permissions:
+- Send Messages
+- Use Slash Commands
+- Create Public Threads (for forum posts)
+- Manage Threads (for cleanup operations)
+- Read Message Contents (This is a privileged intent)
 
 ## Commands
 
@@ -104,15 +118,6 @@ DiscoRSS uses SQLite with automatic migrations:
 
 - **feeds** - Stores RSS feed configurations and tracking data
 - **feed_posts** - Maps forum posts to feeds for cleanup operations
-
-## Bot Permissions
-
-Your Discord bot needs the following permissions:
-- Send Messages
-- Use Slash Commands
-- Create Public Threads (for forum posts)
-- Manage Threads (for cleanup operations)
-- Read Message History
 
 ## Troubleshooting
 
