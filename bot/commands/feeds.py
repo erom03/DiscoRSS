@@ -23,16 +23,19 @@ def setup_feeds(bot: commands.Bot):
         feed_display = name if name else url
         await ctx.send(f"Feed added: `{feed_display}` → {forum_channel.mention}")
 
-    @bot.hybrid_command(name="removefeed", description="Remove a feed by its ID")
+    @bot.hybrid_command(name="removefeed", description="Remove a feed by its display number")
     @commands.has_permissions(administrator=True)
-    async def removefeed(ctx: commands.Context[commands.Bot], feed_id: int):
-        # Get feed info for confirmation
-        feed_info = await db.get_feed_info(feed_id)
+    async def removefeed(ctx: commands.Context[commands.Bot], display_number: int):
+        if ctx.guild is None:
+            return
+            
+        # Convert display number to actual feed ID
+        feed_info = await db.get_feed_by_display_number(ctx.guild.id, display_number)
         if not feed_info:
-            await ctx.send(f"❌ Feed `{feed_id}` not found.")
+            await ctx.send(f"❌ Feed `{display_number}` not found.")
             return
         
-        name, url = feed_info
+        feed_id, forum_channel_id, url, name = feed_info
         feed_display = name if name else url
         
         # Get post count for confirmation
@@ -94,14 +97,14 @@ def setup_feeds(bot: commands.Bot):
     async def listfeeds(ctx: commands.Context[commands.Bot]):
         if ctx.guild is None:
             return
-        feeds = await db.list_feeds(ctx.guild.id)
+        feeds = await db.get_feeds_with_display_numbers(ctx.guild.id)
         if not feeds:
             await ctx.send("No RSS feeds configured for this server.")
             return
 
         msg = "\n".join(
-            f"**[{feed_id}]** {name or url} → <#{forum_channel_id}>"
-            for feed_id, forum_channel_id, url, name in feeds
+            f"**[{display_number}]** {name or url} → <#{forum_channel_id}>"
+            for display_number, feed_id, forum_channel_id, url, name in feeds
         )
 
         await ctx.send(f"Configured feeds:\n{msg}")

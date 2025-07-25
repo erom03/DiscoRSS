@@ -131,6 +131,40 @@ async def get_feed_info(feed_id: int) -> tuple[str, str] | None:
         return None
 
 
+async def get_feeds_with_display_numbers(guild_id: int) -> list[tuple[int, int, int, str, str | None]]:
+    """
+    Get feeds with sequential display numbers (1, 2, 3...).
+    Returns list of (display_number, feed_id, forum_channel_id, url, name) tuples.
+    """
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "SELECT id, forum_channel_id, url, name FROM feeds WHERE guild_id = ? ORDER BY id",
+            (guild_id,),
+        )
+        feeds = await cursor.fetchall()
+        await cursor.close()
+        
+        # Add sequential display numbers starting from 1
+        return [
+            (display_num, feed_id, forum_channel_id, url, name)
+            for display_num, (feed_id, forum_channel_id, url, name) in enumerate(feeds, start=1)
+        ]
+
+
+async def get_feed_by_display_number(guild_id: int, display_number: int) -> tuple[int, int, str, str | None] | None:
+    """
+    Get feed info by display number (1-based).
+    Returns (feed_id, forum_channel_id, url, name) or None if not found.
+    """
+    feeds_with_numbers = await get_feeds_with_display_numbers(guild_id)
+    
+    for display_num, feed_id, forum_channel_id, url, name in feeds_with_numbers:
+        if display_num == display_number:
+            return feed_id, forum_channel_id, url, name
+    
+    return None
+
+
 async def cleanup_feed_posts(feed_id: int, bot) -> tuple[int, int, int]:
     """
     Clean up forum posts for a feed and return statistics.
