@@ -16,7 +16,7 @@ A self-hosted Discord bot that transforms RSS feeds into Discord forum discussio
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.13 or higher
 - Discord bot token with forum channel and message content permissions
 - RSS feeds to monitor
 
