@@ -16,3 +16,10 @@ def get_owner_id():
     if not uid:
         raise ValueError("Please set your userid in .env")
     return int(uid)
+
+
+def get_poll_interval():
+    interval = os.getenv("POLL_INTERVAL_MINUTES")
+    if not interval:
+        return 15
+    return int(interval)
